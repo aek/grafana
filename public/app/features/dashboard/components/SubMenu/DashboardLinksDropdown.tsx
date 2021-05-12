@@ -25,7 +25,7 @@ export const DashboardLinksDropdown: React.FC<Props> = (props) => {
                 <li key={`dashlinks-dropdown-item-${index}`}>
                   <a
                     href={resolvedLink.url}
-                    target={resolvedLink.targetBlank ? '_blank' : undefined}
+                    target={resolvedLink.targetBlank ? '_blank' : '_self'}
                     rel="noreferrer"
                     aria-label={selectors.components.DashboardLinks.link}
                   >
