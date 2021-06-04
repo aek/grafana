@@ -195,6 +195,7 @@ export const getFieldDisplayValues = (options: GetFieldDisplayValuesOptions): Fi
         const results = reduceField({
           field,
           reducers: calcs, // The stats to calculate
+          dataFrames: data,
         });
 
         for (const calc of calcs) {

@@ -55,6 +55,7 @@ export const PlotLegend: React.FC<PlotLegendProps> = ({
           const fieldCalcs = reduceField({
             field,
             reducers: calcs,
+            dataFrames: data,
           });
 
           return calcs.map<DisplayValue>((reducer) => {
