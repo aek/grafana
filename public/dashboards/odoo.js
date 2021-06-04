@@ -21,24 +21,17 @@ var window, document, ARGS, $, jQuery, moment, kbn;
 
 return function (callback) {
   var vars = '';
+  var obj_data = { access_token: ARGS.access_token };
   $.each(ARGS, function (key, value) {
     if (key.startsWith('var-')) {
       vars += '&' + key + '=' + value;
+      obj_data[key] = value;
     }
   });
   $.ajax({
-    method: 'GET',
-    // https://grafana.soltein.net/dashboard/script/odoo.js?endpoint=demo.soltein.net&res_model=project.project&res_id=74&access_token=7453474b-33b6-4848-8407-1c5610e2533e
-    url:
-      'https://' +
-      ARGS.endpoint +
-      '/grafana/dashboards/' +
-      ARGS.res_model +
-      '/' +
-      ARGS.res_id +
-      '?access_token=' +
-      ARGS.access_token +
-      vars,
+    method: 'POST',
+    url: 'https://' + ARGS.endpoint + '/grafana/dashboards/' + ARGS.res_model + '/' + ARGS.res_id,
+    data: obj_data,
   }).done(function (dashboard) {
     callback(dashboard);
   });
