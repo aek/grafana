@@ -2,6 +2,7 @@ import React, { FC, useReducer } from 'react';
 import { Icon, IconName, Tooltip } from '@grafana/ui';
 import { sanitizeUrl } from '@grafana/data/src/text/sanitize';
 import { DashboardLinksDashboard } from './DashboardLinksDashboard';
+import { DashboardLinksDropdown } from './DashboardLinksDropdown';
 import { getLinkSrv } from '../../../panel/panellinks/link_srv';
 
 import { DashboardModel } from '../../state';
@@ -32,9 +33,17 @@ export const DashboardLinks: FC<Props> = ({ dashboard, links }) => {
     return null;
   }
 
+  const dropdownLinks = links.filter((link: DashboardLink) => {
+    return link.asDropdown && link.type !== 'dashboards';
+  });
+  const othersLinks = links.filter((link: DashboardLink) => {
+    return !dropdownLinks.includes(link);
+  });
+
   return (
     <>
-      {links.map((link: DashboardLink, index: number) => {
+      <DashboardLinksDropdown links={dropdownLinks} />
+      {othersLinks.map((link: DashboardLink, index: number) => {
         const linkInfo = getLinkSrv().getAnchorInfo(link);
         const key = `${link.title}-$${index}`;
 
