@@ -9,7 +9,7 @@ import (
 	"github.com/grafana/grafana/pkg/schema"
 )
 
-var panelSubpath cue.Path = cue.MakePath(cue.Def("#Panel"))
+var panelSubpath = cue.MakePath(cue.Def("#Panel"))
 
 func defaultOverlay(p BaseLoadPaths) (map[string]load.Source, error) {
 	overlay := make(map[string]load.Source)
@@ -39,7 +39,10 @@ func BaseDashboardFamily(p BaseLoadPaths) (schema.VersionedCueSchema, error) {
 	cfg := &load.Config{Overlay: overlay}
 	inst, err := rt.Build(load.Instances([]string{"/cue/data/gen.cue"}, cfg)[0])
 	if err != nil {
-		return nil, err
+		cueError := schema.WrapCUEError(err)
+		if err != nil {
+			return nil, cueError
+		}
 	}
 
 	famval := inst.Value().LookupPath(cue.MakePath(cue.Str("Family")))
@@ -127,20 +130,6 @@ func (cds *compositeDashboardSchema) Validate(r schema.Resource) error {
 		return err
 	}
 	return cds.actual.Unify(rv.Value()).Validate(cue.Concrete(true))
-}
-
-// ApplyDefaults returns a new, concrete copy of the Resource with all paths
-// that are 1) missing in the Resource AND 2) specified by the schema,
-// filled with default values specified by the schema.
-func (cds *compositeDashboardSchema) ApplyDefaults(_ schema.Resource) (schema.Resource, error) {
-	panic("not implemented") // TODO: Implement
-}
-
-// TrimDefaults returns a new, concrete copy of the Resource where all paths
-// in the  where the values at those paths are the same as the default value
-// given in the schema.
-func (cds *compositeDashboardSchema) TrimDefaults(_ schema.Resource) (schema.Resource, error) {
-	panic("not implemented") // TODO: Implement
 }
 
 // CUE returns the cue.Value representing the actual schema.

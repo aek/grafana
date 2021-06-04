@@ -4,14 +4,13 @@ import { toString, toNumber as _toNumber, isEmpty, isBoolean } from 'lodash';
 // Types
 import { Field, FieldType } from '../types/dataFrame';
 import { DisplayProcessor, DisplayValue } from '../types/displayValue';
-import { getValueFormat } from '../valueFormats/valueFormats';
+import { getValueFormat, isBooleanUnit } from '../valueFormats/valueFormats';
 import { getValueMappingResult } from '../utils/valueMappings';
 import { dateTime } from '../datetime';
 import { KeyValue, TimeZone } from '../types';
 import { getScaleCalculator } from './scale';
 import { GrafanaTheme2 } from '../themes/types';
 import { anyToNumber } from '../utils/anyToNumber';
-import { getColorForTheme } from '../utils/namedColorsPalette';
 
 interface DisplayProcessorOptions {
   field: Partial<Field>;
@@ -41,7 +40,7 @@ export function getDisplayProcessor(options?: DisplayProcessorOptions): DisplayP
     return toStringProcessor;
   }
 
-  const { field } = options;
+  const field = options.field as Field;
   const config = field.config ?? {};
 
   let unit = config.unit;
@@ -50,10 +49,14 @@ export function getDisplayProcessor(options?: DisplayProcessorOptions): DisplayP
   if (field.type === FieldType.time && !hasDateUnit) {
     unit = `dateTimeAsSystem`;
     hasDateUnit = true;
+  } else if (field.type === FieldType.boolean) {
+    if (!isBooleanUnit(unit)) {
+      unit = 'bool';
+    }
   }
 
   const formatFunc = getValueFormat(unit || 'none');
-  const scaleFunc = getScaleCalculator(field as Field, options.theme);
+  const scaleFunc = getScaleCalculator(field, options.theme);
 
   return (value: any) => {
     const { mappings } = config;
@@ -81,7 +84,7 @@ export function getDisplayProcessor(options?: DisplayProcessorOptions): DisplayP
         }
 
         if (mappingResult.color != null) {
-          color = getColorForTheme(mappingResult.color, options.theme.v1);
+          color = options.theme.visualization.getColorByName(mappingResult.color);
         }
 
         shouldFormat = false;

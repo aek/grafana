@@ -13,6 +13,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/grafana/grafana/pkg/services/libraryelements"
+	"github.com/grafana/grafana/pkg/services/librarypanels"
+
 	"github.com/grafana/grafana/pkg/api/routing"
 	httpstatic "github.com/grafana/grafana/pkg/api/static"
 	"github.com/grafana/grafana/pkg/bus"
@@ -34,8 +37,6 @@ import (
 	"github.com/grafana/grafana/pkg/services/datasourceproxy"
 	"github.com/grafana/grafana/pkg/services/datasources"
 	"github.com/grafana/grafana/pkg/services/hooks"
-	"github.com/grafana/grafana/pkg/services/libraryelements"
-	"github.com/grafana/grafana/pkg/services/librarypanels"
 	"github.com/grafana/grafana/pkg/services/live"
 	"github.com/grafana/grafana/pkg/services/live/pushhttp"
 	"github.com/grafana/grafana/pkg/services/login"
@@ -92,18 +93,18 @@ type HTTPServer struct {
 	PluginRequestValidator models.PluginRequestValidator           `inject:""`
 	PluginManager          plugins.Manager                         `inject:""`
 	SearchService          *search.SearchService                   `inject:""`
-	ShortURLService        *shorturls.ShortURLService              `inject:""`
+	ShortURLService        shorturls.Service                       `inject:""`
 	Live                   *live.GrafanaLive                       `inject:""`
 	LivePushGateway        *pushhttp.Gateway                       `inject:""`
 	ContextHandler         *contexthandler.ContextHandler          `inject:""`
 	SQLStore               *sqlstore.SQLStore                      `inject:""`
-	LibraryPanelService    *librarypanels.LibraryPanelService      `inject:""`
-	LibraryElementService  *libraryelements.LibraryElementService  `inject:""`
 	DataService            *tsdb.Service                           `inject:""`
 	PluginDashboardService *plugindashboards.Service               `inject:""`
 	AlertEngine            *alerting.AlertEngine                   `inject:""`
 	LoadSchemaService      *schemaloader.SchemaLoaderService       `inject:""`
 	Alertmanager           *notifier.Alertmanager                  `inject:""`
+	LibraryPanelService    librarypanels.Service                   `inject:""`
+	LibraryElementService  libraryelements.Service                 `inject:""`
 	Listener               net.Listener
 }
 
